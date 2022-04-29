@@ -1,0 +1,44 @@
+<Personne>
+    <prenom>Martin</prenom>
+    <nom>Couture</nom>
+    <sexe>M</sexe>
+        <Client>
+            <dateInscription>2022-04-20</dateInscription>
+            <courriel>Martin.Couture@cegeplimoilou.ca</courriel>
+            <password>secret123</password>
+        </Client>
+</Personne>
+<Personne>
+    <prenom>Veronique</prenom>
+    <nom>Drolet</nom>
+    <sexe>F</sexe>
+        <Employe>
+            <dateEmbauche>1999-07-05</dateEmbauche>
+            <codeUtilisateur>minaliza@gmail.com</codeUtilisateur>
+            <password>s0l31l</password>
+            <typeAcces>W</typeAcces>
+        </Employe>
+</Personne>
+<Personne>
+    <prenom>Keanu</prenom>
+    <nom>Reeves</nom>
+    <sexe>M</sexe>
+        <Acteur>
+            <dateInscription>1999-07-05</dateInscription>
+            <nomPersonnage>Neo</nomPersonnage>
+            <dateDebut>1999-01-01</dateDebut>
+            <dateFin>2003-12-31</dateFin>
+            <cachet>1000000</cachet>
+<carteCredit>
+    <numero>4530 0011 2233 4455</numero>
+    <dateExpiration>2027-07</dateExpiration>
+    <codeSecret>567</codeSecret>
+</carteCredit>
+<Film>
+    <nomFilm>The Matrix</nomFilm>
+    <duree>120</duree>
+    <descriptionFilm>Film futuriste<descriptionFilm>
+</Film>
+<Categorie>
+    <nomCategorie>comédie</nomCategorie>
+    <descriptionCategorie>Riez aux éclats avec notre vaste choix de films tous plus drôles les uns que les autres</descriptionCategorie>
