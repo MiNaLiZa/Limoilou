@@ -1,13 +1,17 @@
 import turtle
 import string
-import urllib.request
-import json
-f = ("Arial", 12)
+from bs4 import BeautifulSoup
+import lxml
+from cryptography.fernet import Fernet
+clef = open("keyfile.txt", "rb").read()
+fer = Fernet(clef)
+datas = open("database.xml","r")
+soup = BeautifulSoup(datas,'lxml-xml')
+
+police = ("Arial", 12)
 t = turtle
 s = t.Screen()
-d = urllib.request.urlopen('file://localhost/C:/Users/minal/OneDrive/Documents/Netflux/database.json')
-datas = json.load(d)
-print(datas['Client','Film'])
+
 rectangles =  []
 s.setup(0.999,0.999,0,0)
 t.title("-- NETFLUX --")
@@ -84,7 +88,7 @@ class Employe(Personne):
     def setTypeAcces(self, typeAcces):
         self._typeAcces = typeAcces
     def __str__(self):
-        return 'Le prenom de cet employe est {} son nom de famille est {} et cest  {} et travaille depuis {}  son usager c est  {} son mot de passe est {}'.format(self._prenom, self._nom, self._sexe, self._dateEmbauche, self._codeUtilisateur, self._password, self._typeAcces)
+        return 'Le prenom de cet employe est {} son nom de famille est {} et cest  {} et travaille depuis {}  son usager c est  {} son mot de passe est {} et son type acces est {}'.format(self._prenom, self._nom, self._sexe, self._dateEmbauche, self._codeUtilisateur, self._password, self._typeAcces)
 
 class Acteur(Personne):
     "Definition d'un acteur"
@@ -170,27 +174,67 @@ class Categorie():
     def __str__(self):
         return 'Le style {} comprend  {}'.format(self._nomCategorie, self._descriptionCategorie)
 
-a1 = Personne("Jamie", "Nice", "femme")
-print(a1)
+def passwordCrypt(message):
+    encodepwd = message.encode()
+    encryptpwd = fer.encrypt(encodepwd)
+    return(encryptpwd)
 
-b = Client("James", "Bond", "homme", "2022-04-20","james007@gmail.com", "secret123")
-print(b)
+def passwordDecrypt(message):
+    pwd = message.encode()
+    decryptpwd = fer.decrypt(pwd)
+    decodepwd = decryptpwd.decode()
+    return(decodepwd)
 
-c = Employe ("Tom", "Smith", "homme", "2020-03-13", "tommyboy", "soleil456", "admin")
-print(c)
+Personnes = soup.find_all('Personne')
+for eachone in Personnes:
+        prenom = (eachone.prenom.string)
+        nom = (eachone.nom.string)
+        sexe = (eachone.sexe.string)
+        Clients = eachone.find_all('Client')
+        for eachclient in Clients:
+            dateInscription = (eachclient.dateInscription.string)
+            courriel = (eachclient.courriel.string)
+            password = (eachclient.password.string)
+            cl = Client(prenom, nom, sexe, dateInscription,courriel,password)
+            print(cl)
+        Employes = eachone.find_all('Employe')
+        for eachemploye in Employes:
+            dateEmbauche = (eachemploye.dateEmbauche.string)
+            codeUtilisateur = (eachemploye.codeUtilisateur.string)
+            password = (eachemploye.password.string)
+            typeAcces = (eachemploye.typeAcces.string)
+            em = Employe(prenom, nom, sexe, dateEmbauche,codeUtilisateur,password,typeAcces)
+            print(em)
+        Acteurs = eachone.find_all('Acteur')
+        for eachacteur in Acteurs:
+            nomPersonnage = (eachacteur.nomPersonnage.string)
+            dateDebut = (eachacteur.dateDebut.string)
+            dateFin = (eachacteur.dateFin.string)
+            cachet = (eachacteur.cachet.string)
+            act = Acteur(prenom,nom,sexe,nomPersonnage,dateDebut,dateFin,cachet)
+            print(act)
+CarteCredits = soup.find_all('carteCredit')
+for eachcarte in CarteCredits:
+    numero = (eachcarte.numero.string)
+    dateExpiration = (eachcarte.dateExpiration.string)
+    codeSecret = (eachcarte.codeSecret.string)
+    cc = CarteCredit(numero, dateExpiration, codeSecret)
+    print(cc)
 
-d = Acteur("Keanu", "Reeves", "homme", "John Wick", "2013", "2021", "1 milion")
-print(d)
+Films = soup.find_all('Film')
+for eachfilm in Films:
+    nomFilm = (eachfilm.nomFilm.string)
+    duree = (eachfilm.duree.string)
+    descriptionFilm = (eachfilm.descriptionFilm.string)
+    f = Film(nomFilm, duree, descriptionFilm)
+    print(f)
 
-e = CarteCredit("4540 3232 1111 2222", "05-2025", "124")
-print(e)
-
-e = Film("Parabellum", "120", "l histoire dun tueur a gages")
-print(e)
-
-f1 = Categorie("comedie", "film qui fait rire")
-print(f1)
-
+Categories = soup.find_all('Categorie')
+for eachCategorie in Categories:
+    nomCategorie = (eachCategorie.nomCategorie.string)
+    descriptionCategorie = (eachCategorie.descriptionCategorie.string)
+    cat = Categorie(nomCategorie, descriptionCategorie)
+    print(cat)
 
 
 def printPicture(fileName,x,y):
@@ -202,7 +246,7 @@ def printPicture(fileName,x,y):
 
 def drawInputRectangle(nomDuChamp,valeur,long,haut,x,y,secret):
     t.goto(x,y)
-    t.write(nomDuChamp,font=f)
+    t.write(nomDuChamp,font=police)
     t.goto(x+150,y)
     t.pendown()
     
@@ -220,9 +264,9 @@ def drawInputRectangle(nomDuChamp,valeur,long,haut,x,y,secret):
     def copyTexte(key):
         t.forward(10)
         if secret==1:
-            t.write("*",font=f)
+            t.write("*",font=police)
         else:
-            t.write(key, font=f)
+            t.write(key, font=police)
         enteredText.append(key)
         userEntry=""
         for i in enteredText:
@@ -268,9 +312,13 @@ formField2['x'] = -150
 formField2['y'] = 100
 formField2['secret'] = 1
 formulaire.append(formField2)
-print(formulaire)
+
 for item in formulaire:
     drawInputRectangle(item['nomDuChamps'],item['valeur'],item['long'],item['haut'],item['x'],item['y'],item['secret'])
+
+
 t.done()
+
+
 
 
